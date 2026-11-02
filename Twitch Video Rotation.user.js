@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Twitch Video Rotation
 // @description Adds buttons and keyboard shortcuts to rotate and flip the video on Twitch
-// @version     1
+// @version     2
 // @author      brndnm282
 // @namespace   https://github.com/brndnm282/twitch-video-rotation/
 // @supportURL  https://github.com/brndnm282/twitch-video-rotation/issues
@@ -72,24 +72,24 @@ let timer = null;
 (() => {
 	stylesheet = document.createElement('style');
 	document.head.appendChild(stylesheet);
- 
+
 	let getAllSubsets = arr => arr.reduce((subsets, value) => subsets.concat(subsets.map(set => [...set, value])), [[]]).slice(1);
 	let scalings = getAllSubsets(Object.keys(scaling));
- 
+
 	for (let rule in rotations) {
 		stylesheet.sheet.insertRule(`video.${rule} { transform: ${rotations[rule]}; }`, stylesheet.sheet.cssRules.length);
 		for (let scalingSet of scalings) {
 			stylesheet.sheet.insertRule(`video.${rule}.${scalingSet.reduce((s, v) => s+'.'+v)} { transform: ${rotations[rule] + scalingSet.reduce((s, v) => s+' '+scaling[v], '')}; }`, stylesheet.sheet.cssRules.length);
 		}
 	}
- 
+
 	let flips = getAllSubsets([directions.flipH, directions.flipV]);
 	for (let flipSet of flips) {
 		stylesheet.sheet.insertRule(`video.${flipSet.reduce((s, v) => s+'.'+v)} { transform:${flipSet.reduce((s, v) => s+' '+scaling[v], '')}; }`, stylesheet.sheet.cssRules.length);
 	}
- 
+
 	addButtons();
- 
+
 	// Re-add buttons if page changes
 	window.history.pushState = function() {
 		History.prototype.pushState.apply(history, arguments);
@@ -101,7 +101,7 @@ let timer = null;
 function addButtons() {
     clearTimeout(timer);
     let btnArea = document.querySelector('.player-controls__right-control-group');
- 
+
     if (!btnArea) {
         if (++attempts < 10) {
             timer = setTimeout(addButtons, 500);
@@ -148,7 +148,7 @@ function rotateVideo(direction) {
 	let video = document.querySelector('video');
 	if (!video) return;
 	let flip = [directions.flipH, directions.flipV].includes(direction);
- 
+
 	if (flip) {
 		video.classList.toggle(direction);
 	}
@@ -163,6 +163,15 @@ function rotateVideo(direction) {
 	}
 }
 
+function isEditableTarget(target) {
+	if (!target) return false;
+	let tag = target.tagName ? target.tagName.toLowerCase() : '';
+	if (tag === 'input' || tag === 'textarea' || tag === 'select' || target.isContentEditable) {
+		return true;
+	}
+	return Boolean(target.closest && target.closest('[contenteditable="true"], [role="textbox"]'));
+}
+
 window.addEventListener('click', function(e) {
 	if (e.target.parentNode.id != controlsID || e.target.tagName.toLowerCase() != 'button') {
 		return;
@@ -174,6 +183,10 @@ window.addEventListener('click', function(e) {
 
 // Shortcuts
 window.addEventListener('keydown', function(e) {
+	if (isEditableTarget(e.target)) {
+		return;
+	}
+
 	let stopPropagation = false;
 	if (shortcuts[e.code] && shortcutsEnabled) {
 		rotateVideo(shortcuts[e.code]);
@@ -189,3 +202,4 @@ window.addEventListener('keydown', function(e) {
 		e.stopPropagation();
 	}
 }, true);
+
