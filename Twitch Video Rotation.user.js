@@ -2,7 +2,7 @@
 // @name        Twitch Video Rotation
 // @description Adds buttons and keyboard shortcuts to rotate and flip the video on Twitch
 // @version     1
-// @author      Slooshi
+// @author      brndnm282
 // @namespace   https://github.com/brndnm282/twitch-video-rotation/
 // @supportURL  https://github.com/brndnm282/twitch-video-rotation/issues
 // @match       https://www.twitch.tv/*
