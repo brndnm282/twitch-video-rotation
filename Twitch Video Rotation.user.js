@@ -8,8 +8,8 @@
 // @match       https://www.twitch.tv/*
 // @license     MIT
 // @grant       GM_addStyle
-// @downloadURL https://update.greasyfork.org/scripts/527067/Twitch%20Video%20Rotation.user.js
-// @updateURL https://update.greasyfork.org/scripts/527067/Twitch%20Video%20Rotation.meta.js
+// @downloadURL https://raw.githubusercontent.com/brndnm282/twitch-video-rotation/main/Twitch%20Video%20Rotation.user.js
+// @updateURL   https://raw.githubusercontent.com/brndnm282/twitch-video-rotation/main/Twitch%20Video%20Rotation.user.js
 // ==/UserScript==
 
 GM_addStyle(`
