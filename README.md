@@ -13,4 +13,4 @@
 
 ## Installation
 
-https://raw.githubusercontent.com/brndnm282/twitch-video-rotation/main/Twitch%20Video%20Rotation.user.js
+https://github.com/brndnm282/twitch-video-rotation/raw/refs/heads/main/Twitch%20Video%20Rotation.user.js
