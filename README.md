@@ -10,3 +10,7 @@
 | Upside-down (180°) | Numpad 2 |
 | Flip horizontally | Numpad 9 |
 | Flip vertically | Numpad 3 |
+
+## Installation
+
+https://raw.githubusercontent.com/brndnm282/twitch-video-rotation/main/Twitch%20Video%20Rotation.user.js
