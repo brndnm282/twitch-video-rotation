@@ -13,20 +13,20 @@
 
 GM_addStyle(`
 #video-rotation-controls {
-\tmargin-left: 15px;
+	margin-left: 15px;
 }
 #video-rotation-controls button {
-\tfont-size: 20px;
-\tbackground: #f5f5f5;
-\tborder: 1px solid #d9d9d9;
-\tcolor: #414141;
-\tline-height: 22px;
-\theight: 24px;
-\twidth: 24px;
-\toutline: 0;
+	font-size: 20px;
+	background: #f5f5f5;
+	border: 1px solid #d9d9d9;
+	color: #414141;
+	line-height: 22px;
+	height: 24px;
+	width: 24px;
+	outline: 0;
 }
 #video-rotation-controls button:not(:last-child) {
-\tmargin-right: 3px;
+	margin-right: 3px;
 }
 .vwplayer_vlivelive .videoBox {
     height: calc(100% - 4px);
@@ -35,72 +35,72 @@ GM_addStyle(`
 `);
 
 let directions = {
-\tleft: 'r270',
-\tup: 'r0',
-\tright: 'r90',
-\tdown: 'r180',
-\tflipH: 'flipH',
-\tflipV: 'flipV',
+	left: 'r270',
+	up: 'r0',
+	right: 'r90',
+	down: 'r180',
+	flipH: 'flipH',
+	flipV: 'flipV',
 }
 let rotations = {
-\tr90: 'rotate(90deg)',
-\tr180: 'rotate(180deg)',
-\tr270: 'rotate(270deg)',
+	r90: 'rotate(90deg)',
+	r180: 'rotate(180deg)',
+	r270: 'rotate(270deg)',
 };
 let scaling = {
-\tflipH: 'scaleX(-1)',
-\tflipV: 'scaleY(-1)',
-\tportrait: 'scale(1.77777)',
-\tlandscape: 'scale(0.5625)',
+	flipH: 'scaleX(-1)',
+	flipV: 'scaleY(-1)',
+	portrait: 'scale(1.77777)',
+	landscape: 'scale(0.5625)',
 };
 
 let attempts = 0;
 let controlsID = 'video-rotation-controls';
 let shortcutsEnabled = true;
 let shortcuts = {
-\t'Numpad8': directions.up,
-\t'Numpad2': directions.down,
-\t'Numpad4': directions.left,
-\t'Numpad6': directions.right,
-\t'Numpad9': directions.flipH,
-\t'Numpad3': directions.flipV,
+	'Numpad8': directions.up,
+	'Numpad2': directions.down,
+	'Numpad4': directions.left,
+	'Numpad6': directions.right,
+	'Numpad9': directions.flipH,
+	'Numpad3': directions.flipV,
 }
 let stylesheet = null;
 let timer = null;
 
 (() => {
-\tstylesheet = document.createElement('style');
-\tdocument.head.appendChild(stylesheet);
-
-\tlet getAllSubsets = arr => arr.reduce((subsets, value) => subsets.concat(subsets.map(set => [...set, value])), [[]]).slice(1);
-\tlet scalings = getAllSubsets(Object.keys(scaling));
-
-\tfor (let rule in rotations) {
-\t\tstylesheet.sheet.insertRule(`video.${rule} { transform: ${rotations[rule]}; }`, stylesheet.sheet.cssRules.length);
-\t\tfor (let scalingSet of scalings) {
-\t\t\tstylesheet.sheet.insertRule(`video.${rule}.${scalingSet.reduce((s, v) => s+'.'+v)} { transform: ${rotations[rule] + scalingSet.reduce((s, v) => s+' '+scaling[v], '')}; }`, stylesheet.sheet.cssRules.length);
-\t\t}
-\t}
-
-\tlet flips = getAllSubsets([directions.flipH, directions.flipV]);
-\tfor (let flipSet of flips) {
-\t\tstylesheet.sheet.insertRule(`video.${flipSet.reduce((s, v) => s+'.'+v)} { transform:${flipSet.reduce((s, v) => s+' '+scaling[v], '')}; }`, stylesheet.sheet.cssRules.length);
-\t}
-
-\taddButtons();
-
-\t// Re-add buttons if page changes
-\twindow.history.pushState = function() {
-\t\tHistory.prototype.pushState.apply(history, arguments);
-\t\tattempts = 0;
-\t\tsetTimeout(addButtons, 2000);
-\t}
+	stylesheet = document.createElement('style');
+	document.head.appendChild(stylesheet);
+ 
+	let getAllSubsets = arr => arr.reduce((subsets, value) => subsets.concat(subsets.map(set => [...set, value])), [[]]).slice(1);
+	let scalings = getAllSubsets(Object.keys(scaling));
+ 
+	for (let rule in rotations) {
+		stylesheet.sheet.insertRule(`video.${rule} { transform: ${rotations[rule]}; }`, stylesheet.sheet.cssRules.length);
+		for (let scalingSet of scalings) {
+			stylesheet.sheet.insertRule(`video.${rule}.${scalingSet.reduce((s, v) => s+'.'+v)} { transform: ${rotations[rule] + scalingSet.reduce((s, v) => s+' '+scaling[v], '')}; }`, stylesheet.sheet.cssRules.length);
+		}
+	}
+ 
+	let flips = getAllSubsets([directions.flipH, directions.flipV]);
+	for (let flipSet of flips) {
+		stylesheet.sheet.insertRule(`video.${flipSet.reduce((s, v) => s+'.'+v)} { transform:${flipSet.reduce((s, v) => s+' '+scaling[v], '')}; }`, stylesheet.sheet.cssRules.length);
+	}
+ 
+	addButtons();
+ 
+	// Re-add buttons if page changes
+	window.history.pushState = function() {
+		History.prototype.pushState.apply(history, arguments);
+		attempts = 0;
+		setTimeout(addButtons, 2000);
+	}
 })();
 
 function addButtons() {
     clearTimeout(timer);
     let btnArea = document.querySelector('.player-controls__right-control-group');
-
+ 
     if (!btnArea) {
         if (++attempts < 10) {
             timer = setTimeout(addButtons, 500);
@@ -140,52 +140,51 @@ function addButtons() {
         div.appendChild(btn);
     }
 
-    //btnArea.parentNode.insertBefore(div, btnArea.nextSibling);
     btnArea.parentNode.insertBefore(div, btnArea);
 }
 
 function rotateVideo(direction) {
-\tlet video = document.querySelector('video');
-\tif (!video) return;
-\tlet flip = [directions.flipH, directions.flipV].includes(direction);
-
-\tif (flip) {
-\t\tvideo.classList.toggle(direction);
-\t}
-\telse {
-\t\tvideo.classList.remove(directions.left, directions.right, directions.down, 'portrait', 'landscape');
-\t\tif (direction != directions.up) {
-\t\t\tvideo.classList.add(direction);
-\t\t\tif ([directions.left, directions.right].includes(direction)) {
-\t\t\t\tvideo.classList.add(video.videoHeight > video.videoWidth ? 'portrait' : 'landscape');
-\t\t\t}
-\t\t}
-\t}
+	let video = document.querySelector('video');
+	if (!video) return;
+	let flip = [directions.flipH, directions.flipV].includes(direction);
+ 
+	if (flip) {
+		video.classList.toggle(direction);
+	}
+	else {
+		video.classList.remove(directions.left, directions.right, directions.down, 'portrait', 'landscape');
+		if (direction != directions.up) {
+			video.classList.add(direction);
+			if ([directions.left, directions.right].includes(direction)) {
+				video.classList.add(video.videoHeight > video.videoWidth ? 'portrait' : 'landscape');
+			}
+		}
+	}
 }
 
 window.addEventListener('click', function(e) {
-\tif (e.target.parentNode.id != controlsID || e.target.tagName.toLowerCase() != 'button') {
-\t\treturn;
-\t}
-\telse if (e.target.dataset.direction) {
-\t\trotateVideo(e.target.dataset.direction);
-\t}
+	if (e.target.parentNode.id != controlsID || e.target.tagName.toLowerCase() != 'button') {
+		return;
+	}
+	else if (e.target.dataset.direction) {
+		rotateVideo(e.target.dataset.direction);
+	}
 }, true);
 
 // Shortcuts
 window.addEventListener('keydown', function(e) {
-\tlet stopPropagation = false;
-\tif (shortcuts[e.code] && shortcutsEnabled) {
-\t\trotateVideo(shortcuts[e.code]);
-\t\tstopPropagation = true;
-\t}
-\telse if (e.code == 'Pause') {
-\t\tshortcutsEnabled = !shortcutsEnabled;
-\t\tstopPropagation = true;
-\t}
+	let stopPropagation = false;
+	if (shortcuts[e.code] && shortcutsEnabled) {
+		rotateVideo(shortcuts[e.code]);
+		stopPropagation = true;
+	}
+	else if (e.code == 'Pause') {
+		shortcutsEnabled = !shortcutsEnabled;
+		stopPropagation = true;
+	}
 
-\tif (stopPropagation) {
-\t\te.preventDefault();
-\t\te.stopPropagation();
-\t}
+	if (stopPropagation) {
+		e.preventDefault();
+		e.stopPropagation();
+	}
 }, true);
